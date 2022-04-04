@@ -40,7 +40,13 @@ class FisherLDAClassifier:
         eig_value, eig_vector = np.linalg.eig(mat)
         eig_list = [(eig_value[i], eig_vector[:, i]) for i in range(len(eig_value))]
         eig_list = sorted(eig_list, key=lambda x: x[0], reverse=True)
+        # choose num_classes-1 largest eigen vectors
         w = np.array([eig_list[i][1] for i in range(num_classes - 1)])
+        # calculate bias
+        g_x = np.dot(self.x_train, w.T)
+        mean_c = np.zeros((self.x_train.shape[1], num_classes))
+        for i in range(num_classes):
+            mean_c[:, i] = np.mean(g_x[np.where(self.y_train == self.classes[i])[0]], 0)
         return w
 
     def classify(self):
